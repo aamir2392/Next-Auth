@@ -1,17 +1,28 @@
 "use client";
+import { signUp } from "@/actions/auth";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import AuthButton from "./AuthButton";
-// import { useRouter } from "next/navigation";
 
 const SignUpForm = () => {
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null | undefined>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  // const router = useRouter();
+  const router = useRouter();
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setLoading(true);
-    setError(null);
 
+    const formData = new FormData(event.currentTarget);
+    setLoading(true);
+    const result = await signUp(formData);
+
+    if (result.success === "success") {
+      // Redirect to the home page or any other page after successful sign up
+      router.push("/");
+    } else {
+      // Handle error case
+      setError(result.status);
+    }
+    // Reset the loading state after processing
     setLoading(false);
   };
   return (
